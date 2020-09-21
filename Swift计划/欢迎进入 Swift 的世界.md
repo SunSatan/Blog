@@ -390,7 +390,7 @@ let implicitString: String = assumedString // 直接使用，不需要强制展�
 
 当你使用隐式展开可选项值时，Swift 首先尝试将它作为普通可选值来使用；如果它不能作为可选项，Swift 就强制展开值。
 
-在上面的代码中，可选值`assumedString`在给`implicitString`赋值前强制展开，因为`implicitString`有显式的非可选String类型。在下面的代码中， `optionalString`没有显式写明类型，所以它是普通可选项。
+在上面的代码中，可选值`assumedString`在给 `implicitString` 赋值前强制展开，因为`implicitString`有显式的非可选String类型。在下面的代码中， `optionalString`没有显式写明类型，所以它是普通可选项。
 
 ```swift
 let optionalString = assumedString
@@ -498,4 +498,242 @@ precondition(index > 0, "Index must be greater than zero.")
 如果你在不检查模式编译（ -Ounchecked ），先决条件就不会检查。编译器假定先决条件永远为真，并且它根据你的代码进行优化。总之，`fatalError(_:file:line:)`函数一定会终止执行，无论你优化设定如何。
 
 你可以在早期开发过程中使用`fatalError(_:file:line:)`函数来标记那些还没实现的功能。由于致命错误永远不会被优化，不同于断言和先决条件，你可以确定执行遇到这些临时占位永远会停止。
+
+## 基本运算符
+
+### 赋值运算符
+
+单个元素的赋值自不必多说。
+
+如果赋值符号右侧是拥有多个值的元组，它的元素将会一次性地拆分成常量或者变量进行赋值：
+
+```swift
+let (x, y) = (1, 2) // x 等于 1, 同时 y 等于 2
+```
+
+与 Objective-C 和 C 不同，Swift 的赋值符号自身不会返回值。下面的语句是不合法的：
+
+```swift
+if x = y {
+    // 这是不合法的, 因为 x = y 并不会返回任何值。
+}
+```
+
+这个特性避免了赋值符号 ( ***`=`*** ) 被当成等于符号 ( ***`==`*** ) 使用。
+
+### 算术运算符
+
+Swift 对所有的数字类型都支持四种标准算术运算符：加 ( + )、减 ( - )、乘 ( * )、除 ( / )
+
+与 C 和 Objective-C 中的算术运算符不同，Swift 算术运算符默认不允许值溢出。
+
+你也可以选择使用 Swift 的溢出操作符（比如 `a &+ b`  ）来行使溢出行为。
+
+加法运算符同时也支持 String 的拼接：`"hello, " + "world"` 。
+
+### 余数运算符
+
+*余数运算符*（ a % b ）可以求出多少个 b 的倍数能够刚好放进 a 中并且返回剩下的值（就是我们所谓的余数）。
+
+现在我们展示余数运算符如何生效：要计算 9 % 4，你首先要求出多少个 4 能够放到 9 里边：
+
+你可以给 9 当中放进两个 4 去，这样就得到了 1 这个余数 （橘黄色的部分）。
+
+在 Swift 中，这将写作：`9 % 4` 。
+
+决定 a % b` `的结果， % 按照如下等式运算然后返回 remainder 作为它的输出：
+
+$a = (b * multiplier) + remainder$
+
+其中，multiplier 是 b 能放进 a 的最大倍数，把 a=9 和 b=4 插入到等式当中去：9 = (4 x 2) + 1 。
+
+当 a 是负数时也使用相同的方法来进行计算：-9 = (4 x -2) + -1，得到余数 -1 。
+
+当 b为负数时它的正负号被忽略掉了。这意味着 a % b 与 a % -b 能够获得相同的答案。
+
+### 一元减号运算符
+
+数字值的正负号可以用前缀（ - ）来切换，不加任何空格。
+
+### 一元加号运算符
+
+一元加号运算符（ + ）作为返回它操作的值，不会对其进行任何的修改：
+
+尽管一元加号运算符实际上什么也不做，你还是可以对正数使用它来让你的代码对一元减号运算符来说显得更加对称。
+
+### 组合赋值符号
+
+如同 C ，Swift 提供了由赋值符号（ = ）和其他符号组成的组合赋值符号：（ += ）、（ -= ）、（ *= ）、（ /= ）、（ %= ）。
+
+### 比较运算符
+
+Swift 支持所有 C 的标准比较运算符：相等 ( a == b )、不相等 ( a != b )、大于 ( a > b )、小于 ( a < b )、大于等于 ( a >= b )、小于等于 ( a <= b )。
+
+Swift 还提供两个等价运算符（ === 和 !\== ），可以使用它们来判断两个对象的引用是否相同。
+
+你可以比较拥有同样数量值的元组，只要元组中的每个值都是可比较的。
+
+比如说， Int 和 String 都可以用来比较大小，也就是说 (Int,String) 类型的元组就可以比较。
+
+一般来说， Bool 不能比较，这意味着包含布尔值的元组不能用来比较大小。
+
+元组以从左到右的顺序比较大小，一次一个值，直到找到两个不相等的值为止。如果所有的值都是相等的，那么就认为元组本身是相等的。
+
+Swift 标准库包含的元组比较运算符仅支持小于七个元素的元组。
+
+要比较拥有七个或者更多元素的元组，你必须自己实现比较运算符。
+
+### 三元条件运算符
+
+三元条件运算符是一种有三部分的特殊运算，它看起来是这样的：
+
+```swift
+ question ? answer1 : answer2 
+```
+
+这是一种基于 question 是真还是假来选择两个表达式之一的便捷写法。
+
+如果 question 是真，则以 answer1 为返回值；否则以 answer2 为返回值。
+
+三元条件运算符就是下边代码的简写：
+
+```swift
+if question {
+    answer1
+} else {
+    answer2
+}
+```
+
+三元条件运算符提供了一个非常有效的简写来决策要两个表达式之间选哪个。
+
+但是，使用三元条件运算符要小心。它的简洁性会导致你代码重用的时候失去易读的特性，所以要避免把多个三元条件运算符组合到一句代码当中。
+
+### 合并空值运算符
+
+合并空值运算符 （ a ?? b ）如果可选项 a 有值则展开，如果没有值是 nil ，则返回默认值 b 。表达式 a 必须是一个可选类型。表达式 b 必须与 a 的储存类型相同。
+
+合并空值运算符是下边代码的缩写：
+
+```swift
+a != nil ? a! : b
+```
+
+上边的代码中，使用三元条件运算符强制展开（ a! ）储存在 a 中的值，如果 a 不是 nil 的话，否则就返回 b 的值。如果 a 的值是非空的， b 的值将不会被考虑。
+
+合并空值运算符提供了更加优雅的方式来封装这个条件选择和展开操作，让它更加简洁易读。
+
+下边的栗子使用了合并空值运算符来在默认颜色名和可选的用户定义颜色名之间做选择：
+
+```swift
+let defaultColorName = "red"
+var userDefinedColorName: String? // defaults to nil
+var colorNameToUse = userDefinedColorName ?? defaultColorName
+// userDefinedColorName is nil, so colorNameToUse is set to the default of "red"
+```
+
+### 区间运算符
+
+Swift 包含了两个区间运算符 ，他们是表示一个范围的值的便捷方式。
+
+#### 闭区间运算符
+
+闭区间运算符（ a...b ）定义了从 a 到 b 的一组范围，并且包含 a 和 b ，其中，a 的值不能大于 b 。
+
+在遍历你需要用到的所有数字时，使用闭区间运算符是个不错的选择，比如说在 for-in 循环当中：
+
+```swift
+for index in 1...5 {
+    print("\(index) times 5 is \(index * 5)")
+}
+```
+
+#### 左闭右开区间运算符
+
+左闭右开区间运算符（ a..<b ）定义了从 a 到 b 但不包括 b 的区间，它只包含起始值但并不包含结束值。
+
+如同闭区间运算符， a 的值也不能大于 b ，同时如果 a 与 b 的值相等，那返回的区间将会是空的。
+
+左闭右开区间运算符在遍历基于零开始序列比如说数组的时候非常有用，它从零开始遍历到数组长度（但是不包含）：
+
+```swift
+let names = ["Anna", "Alex", "Brian", "Jack"]
+for i in 0..<names.count {
+    print("Person \(i + 1) is called \(names[i])")
+}
+```
+
+#### 单侧区间
+
+单侧区间是指让区间朝一个方向尽可能的延伸，在这种情况下，你可以省略区间运算符一侧的值。
+
+因为运算符只有一侧有值，比如说：
+
+```swift
+for name in names[2...] {
+    print(name)
+}// Brian Jack
+
+for name in names[...2] {
+    print(name)
+}// Anna Alex Brian
+```
+
+左闭右开区间运算符同样有单侧形式，只需要写它最终的值。
+
+```swift
+for name in names[..<2] {
+    print(name)
+}// Anna Alex
+```
+
+单侧区间可以在其他上下文中使用，不仅仅是下标。
+
+但你不能遍历省略了第一个值的单侧区间，因为遍历根本不知道该从哪里开始。
+
+你可以遍历省略了最终值的单侧区间；总之，由于区间无限连续，你要确保给循环添加一个显式的条件。
+
+```swift
+let range = ...5    //(-∞, 5]
+range.contains(7)   // false
+range.contains(4)   // true
+range.contains(-1)  // true
+```
+
+### 逻辑运算符
+
+Swift 支持三种基于 C 的语言的标准逻辑运算符：逻辑非  ( !a )、逻辑与  ( a && b )、逻辑或  ( a || b )。
+
+## 字符串和字符
+
+### 字符串字面量
+
+字符串字面量是被双引号（ " ）包裹的固定顺序文本字符。
+
+```swift
+let someString = "Some string literal value"
+```
+
+### 多行字符串字面量
+
+多行字符串字面量是用三个双引号引起来的一系列字符：
+
+```swift
+let quotation = """
+The White Rabbit put on his spectacles.  "Where shall I begin,
+please your Majesty?" he asked.
+ 
+"Begin at the beginning," the King said gravely, "and go on
+till you come to the end; then stop."
+"""
+```
+
+多行字符串字面量把所有行包括在引号内，也就是说多行字符串的开始或者结束都不会有换行符：
+
+```swift
+let singleLineString = "These are the same."
+let multilineString = """
+These are the same.
+"""
+```
 
