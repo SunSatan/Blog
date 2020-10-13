@@ -714,7 +714,7 @@ Swift 支持三种基于 C 的语言的标准逻辑运算符：逻辑非  ( !a )
 let someString = "Some string literal value"
 ```
 
-### 多行字符串字面量
+#### 多行字符串字面量
 
 多行字符串字面量是用三个双引号引起来的一系列字符：
 
@@ -735,5 +735,298 @@ let singleLineString = "These are the same."
 let multilineString = """
 These are the same.
 """
+
+// 输出都是单行的 These are the same.
 ```
 
+但是要让多行字符串字面量的起始或结束于换行，就在第一或最后一行多写一个空行：
+
+```swift
+let multilineString = """
+
+These are the same.
+
+"""
+```
+
+多行字符串可以根据缩进来匹配周围的代码。结束的（ """ ）前的空格会告诉 Swift 其他行前应该有多少空白是需要忽略的，如果某行的空格超过了结束的（ """ ），那么这些空格就会被包含进字符串。
+
+<img src="https://cdn.jsdelivr.net/gh/SunSatan/PictureBed@master/uPic/image-20201011150022399.png" alt="image-20201011150022399" style="zoom:50%;" />
+
+#### 字符串字面量里的特殊字符
+
+- 转义特殊字符 \0 (空字符)， \\\\ (反斜杠)， \t (水平制表符)， \n (换行符)， \r(回车符)， \" (双引号) 以及 \' (单引号)；
+- 任意的 Unicode 标量，写作 \u{n}，里边的 n是一个 1-8 个与合法 Unicode 码位相等的16进制数字。
+
+```swift
+let wiseWords = "\"Imagination is more important than knowledge\" - Einstein"
+// "Imagination is more important than knowledge" - Einstein
+let dollarSign = "\u{24}" // $, Unicode scalar U+0024
+let blackHeart = "\u{2665}" // ♥, Unicode scalar U+2665
+let sparklingHeart = "\u{1F496}" // 💖️, Unicode scalar U+1F496
+```
+
+由于多行字符串字面量使用三个双引号而不是一个作为标记，所以多行字符串字面量中可以直接使用双引号（ “ ）而不需转义。
+
+但要在多行字符串中包含文本（"""） ，则至少需要一个转义：
+
+```swift
+let threeDoubleQuotationMarks = """
+Escaping the first quotation mark \"""
+Escaping all three quotation marks \"\"\"
+"""
+
+/* 打印如下：
+Escaping the first quotation mark """
+Escaping all three quotation marks """
+*/
+```
+
+### 初始化一个空字符串
+
+为了绑定一个更长的字符串，要在一开始创建一个空的 String 值，要么赋值一个空的字符串字面量给变量，要么使用初始化器语法来初始化一个新的 String 实例：
+
+```swift
+var emptyString = ""
+var anotherEmptyString = String()
+```
+
+通过检查布尔量 `isEmpty` 属性来确认一个 String 值是否为空：
+
+```swift
+if emptyString.isEmpty {
+    print("Nothing to see here")
+}
+```
+
+### 字符串是值类型
+
+Swift 的 String 是一种值类型。如果你创建了一个新的 String 值， String 值在传递给方法或者函数的时候会被复制过去，还有赋值给常量或者变量的时候也是一样。
+
+每一次赋值和传递，现存的 String 值都会被复制一次，传递走的是拷贝的副本而不是原本。
+
+Swift 的默认拷贝 String 的行为保证了当一个方法或者函数传给你一个 String 值时，你就绝对拥有了这个 String值，无需关心它从哪里来到哪里去，你可以确定你传走的这个字符串除了你自己就不会有别人改变它。
+
+另一方面，Swift 编译器优化了字符串使用的资源，实际上拷贝只会在确实需要的时候才进行。这意味着当你把字符串当做值类型来操作的时候总是能够有用很棒的性能。
+
+### 操作字符
+
+你可以通过 for-in循环遍历 String 中的每一个独立的 Character值：
+
+```swift
+for character in "Dog!🐶️" {
+    print(character)
+}
+// D
+// o
+// g
+// !
+// 🐶️
+```
+
+你可以通过提供 Character类型标注来从单个字符的字符串字面量创建一个独立的 Character常量或者变量：
+
+```swift
+ let exclamationMark: Character = "!"
+```
+
+String 可以直接使用 Character 的数组来初始化：
+
+```swift
+let catCharacters: [Character] = ["C", "a", "t", "!", "🐱️"]
+let catString = String(catCharacters) // "Cat!🐱️"
+```
+
+### 连接字符串和字符
+
+String 可以使用（+）来进行拼接：
+
+```swift
+var welcome = "hello" + " there" // hello there
+```
+
+可以使用 String 的 `append()` 方法来追加 Character 值：
+
+```swift
+let exclamationMark: Character = "!"
+welcome.append(exclamationMark) // "hello there!"
+```
+
+### 字符串插值
+
+字符串插值是一种从混合**常量**、**变量**、**字面量**和**表达式**的字符串字面量构造新 String值的方法。每一个你插入到字符串字面量的元素都要被一对圆括号包裹，然后使用反斜杠前缀：
+
+```swift
+let message = "\(3) times 2.5 is \(Double(3) * 2.5)" // 3 times 2.5 is 7.5
+```
+
+注意：你作为插值写在圆括号中的表达式不能包含非转义的反斜杠（\\），并且不能包含回车或者换行符。
+
+### 扩展字符串分隔符
+
+可以在字符串字面量的前后放置扩展分隔符（#），让字符串包含特殊字符而不让它们生效。
+
+```swift
+let towLine = #"Line 1\nLine 2"#
+// 打印：Line 1\nLine 2
+// 而不会打印两行
+```
+
+但如果你需要字符串中某个特殊符号的效果，需要在（\）的后面（n）的前面放与字符串字面量的前后数量相等的（#）。
+
+```swift
+let towLine = #"Line 1\#nLine 2"#
+let towLine = ##"Line1\##nLine2"##
+let towLine = ###"Line1\###nLine2"###
+```
+
+扩展分隔符（#）同样可以使用多行字符串字面量。你可以在多行字符串字面量中使用扩展分隔符来包含文本""" ，从而避免让它结束字面量。
+
+```swift
+let threeMoreDoubleQuotationMarks = #"""
+Here are three more double quotes: """
+"""#
+```
+
+扩展分隔符（#）同样可以作用在字符串插值中：
+
+```swift
+print(#"Write an interpolated string in Swift using \(multiplier)."#)
+// Prints "Write an interpolated string in Swift using \(multiplier)."
+
+print(#"6 times 7 is \#(6 * 7)."#)
+// Prints "6 times 7 is 42."
+```
+
+### Unicode
+
+Unicode 是一种在不同书写系统中编码、表示和处理文本的国际标准。它允许你表示几乎标准化格式的任何语言中的任何字符，并且为外部源比如文本文档或者网页读写这些字符。如同这节中描述的那样，Swift 的 String和 Character类型是完全 Unicode 兼容的。
+
+### 字符统计
+
+要在字符串中取出 Character 值的总数，使用字符串的 `count` 属性。
+
+通过 `count` 属性返回的字符统计并不会总是与包含相同字符的 NSString 中 length 属性相同。
+
+### 访问和修改字符串
+
+你可以通过下标脚本语法或者它自身的属性和方法来访问和修改字符串。
+
+#### 字符串索引
+
+每一个 String 值都有相关的索引类型，`String.Index` 相当于每个 Character 在字符串中的位置。
+
+不同的字符会获得不同的内存空间来储存，所以为了明确哪个 Character 在哪个特定的位置，必须使用 `String.Index` 来获取。因此，Swift 的字符串不能通过整数值索引，例如 towLine[1] 会报错。
+
+我们使用 `startIndex` 属性来访问 String 中第一个 Character 的位置。
+
+`endIndex ` 属性就是 String 中最后一个字符后的位置，所以 `endIndex` 属性是越界的。
+
+如果 String 为空，则 `startIndex` 与 endIndex 相等。
+
+使用 index(before:) 和 index(after:) 方法来访问给定索引的前后。
+
+要访问给定索引更远的索引，可以使用index(_:offsetBy:) 方法。
+
+```swift
+let greeting = "Guten Tag!"
+greeting[greeting.startIndex]
+// G
+greeting[greeting.index(before: greeting.endIndex)]
+// !
+greeting[greeting.index(after: greeting.startIndex)]
+// u
+let index = greeting.index(greeting.startIndex, offsetBy: 7)
+greeting[index]
+// a
+```
+
+使用 `indices` 属性来访问字符串中每个字符的索引。
+
+```swift
+for index in greeting.indices {
+    print("\(greeting[index]) ")
+}
+// G u t e n   T a g ! 
+```
+
+### 子字符串
+
+当你使用方法会获得了一个字符串的子字符串 Substring 的实例，这不是另外一个字符串，因为Substring 和 String 共用一块内存区域，所以需要把提取出来的 Substring  转换为 String 实例。
+
+```swift
+let greeting = "Hello, world!"
+let index = greeting.index(of: ",") ?? greeting.endIndex
+let beginning = greeting[..<index] // Hello
+
+let newString = String(beginning)
+```
+
+<img src="/Users/sunsatan/Library/Application%20Support/typora-user-images/image-20201011184808631.png" alt="image-20201011184808631" style="zoom: 33%;" />
+
+#### 字符串比较
+
+Swift 提供了三种方法来比较文本值：字符串和字符相等性，前缀相等性以及后缀相等性。
+
+#### 字符串和字符相等性
+
+字符串和字符相等使用“等于”运算符（ == ）和“不等”运算符（ != ）进行检查：
+
+两个 String值（或者两个 Character值）如果它们的扩展字形集群是*规范化相等*，则被认为是相等的。
+
+如果扩展字形集群拥有相同的语言意义和外形，我们就说它规范化相等，就算它们实际上是由不同的 Unicode 标量组合而成。
+
+#### 前缀和后缀相等性
+
+要检查一个字符串是否拥有特定的字符串前缀或者后缀，调用字符串的 `hasPrefix()` 和 `hasSuffix()` 方法，它们两个都会接受一个 String 类型的实际参数并且返回一个布尔量值。
+
+`hasPrefix()` 和 `hasSuffix()` 方法只对字符串当中的每一个扩展字形集群之间进行了一个逐字符的规范化相等比较。
+
+## 集合类型
+
+Swift 提供了三种主要的集合类型，数组、合集还有字典。数组是有序的值的集合。合集是唯一值的无序集合。字典是无序的键值对集合。
+
+Swift 中的数组、合集和字典总是明确能储存的值的类型以及它们能储存的键。就是说你不会意外地插入一个错误类型的值到集合中去。它同样意味着你可以从集合当中取回确定类型的值。
+
+Swift 的数组、合集和字典是以泛型集合实现的。
+
+### 集合的可变性
+
+`let` 声明的集合就是不可变的，`var` 声明的集合就是可变的，就可以通过添加、移除、替换来改变集合中的元素。
+
+在集合不需要改变的情况下创建不可变集合是个不错的选择。这样做可以允许 Swift 编译器优化你创建的集合的性能。
+
+### 数组
+
+数组以有序的方式来储存相同类型的值。相同类型的值可以在数组的不同地方多次出现。
+
+Swift 数组的类型完整写法是 `Array<Element>`， 简写为 `[Element]`，Element 是数组允许存入的值的类型。
+
+### 创建一个空数组
+
+你可以使用确定类型通过初始化器语法来创建一个空数组：
+
+```swift
+var someInts = [Int]()
+```
+
+### 使用数组字面量创建数组
+
+```swift
+var shoppingList: [String] = ["Eggs", "Milk"]
+```
+
+### 使用默认值创建数组
+
+Swift 的 Array 类型提供了初始化器来创建确定大小且元素都设定为相同默认值的数组。
+
+你可以传给初始化器对应类型的默认值（repeating）和新数组元素的数量（count）：
+
+```swift
+var threeDoubles = Array(repeating: 0.0, count: 3)
+// threeDoubles is of type [Double], and equals [0.0, 0.0, 0.0]
+```
+
+你可以通过把两个兼容类型的现存数组用加运算符（ +）加在一起来创建一个新数组。
+
+### 访问和修改数组
