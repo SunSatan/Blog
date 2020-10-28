@@ -96,4 +96,3 @@ See `config.log' for more details
 
 出现此问题是安装了多个 XCode，或者未指定 XCode导致的
 
-<img src="/Users/maoerduo/Documents/Blog/EgsVqJibl3pRWue.png" alt="image-20201027101525446" style="zoom: 67%;" />
