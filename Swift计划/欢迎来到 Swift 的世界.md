@@ -1002,7 +1002,7 @@ Swift 的数组、合集和字典是以泛型集合实现的。
 
 Swift 数组的类型完整写法是 `Array<Element>`， 简写为 `[Element]`，Element 是数组允许存入的值的类型。
 
-### 创建一个空数组
+#### 创建一个空数组
 
 你可以使用确定类型通过初始化器语法来创建一个空数组：
 
@@ -1010,13 +1010,13 @@ Swift 数组的类型完整写法是 `Array<Element>`， 简写为 `[Element]`�
 var someInts = [Int]()
 ```
 
-### 使用数组字面量创建数组
+#### 使用数组字面量创建数组
 
 ```swift
 var shoppingList: [String] = ["Eggs", "Milk"]
 ```
 
-### 使用默认值创建数组
+#### 使用默认值创建数组
 
 Swift 的 Array 类型提供了初始化器来创建确定大小且元素都设定为相同默认值的数组。
 
@@ -1029,4 +1029,196 @@ var threeDoubles = Array(repeating: 0.0, count: 3)
 
 你可以通过把两个兼容类型的现存数组用加运算符（ +）加在一起来创建一个新数组。
 
-### 访问和修改数组
+#### 访问和修改数组
+
+count 只读属性可以得出数组中元素的数量。
+
+isEmpty 布尔量属性可以快捷检查 count属性是否等于 0。
+
+可以通过 append(_:) 方法或 ( += ) 给数组末尾添加新的元素。
+
+可以通过下标从数组中取值、修改值，但不能用下标来追加一个新元素到数组的末尾。
+
+同样可以使用下标来一次改变一个范围的全部值，就算替换与范围长度不同的值的合集也行。
+
+```swift
+shoppingList[4...6] = ["Bananas", "Apples"]
+```
+
+当数组中元素被移除，任何留下的空白都会被封闭。需要测试。
+
+#### 数组遍历
+
+可以用 `for-in` 循环来遍历整个数组中值的合集：
+
+```swift
+for item in shoppingList {
+    print(item)
+}
+```
+
+如果需要值和索引，可以使用元组获取数组的 enumerated() 方法返回值进行遍历。
+
+```swift
+for (index, value) in shoppingList.enumerated() {
+    print("Item \(index + 1): \(value)")
+}
+```
+
+### 合集
+
+合集（Set）将同一类型且不重复的值无序地储存一起。
+
+当顺序不重要或者确保元素不会重复的时候，合集（Set）可以代替数组。
+
+#### 合集的哈希值
+
+为了能让类型储存在合集（Set）当中，类型必须是可哈希的，也就是说类型必须提供计算它自身哈希值的方法。
+
+哈希值是 Int 且所有的对比起来相等的对象都一定相同，比如 a == b 必然遵循 a.hashValue == b.hashValue。
+
+所有 Swift 的基础类型（比如 String, Int, Double, 和 Bool）默认都是可哈希的，并且可以用于合集或者字典的键。
+
+自定义的类型只要让遵循 Hashable 协议，即可用于合集或者字典的键。
+
+遵循 Hashable 协议的类型必须提供可获取的叫做 hashValue的 Int 属性。
+
+又因为 Hashable 协议遵循 Equatable 协议，遵循的类型必须同时实现“等于”运算符 ( == ) 。
+
+Equatable 协议需要任何遵循 ( == ) 的实现都具有等价关系。就是说 ( == ) 的实现必须满足以下三个条件，其中 a, b, 和 c是任意值：
+
+- a == a (自反性)
+- a == b 意味着 b == a (对称性)
+- a == b && b == c 意味着 a == c (传递性)
+
+#### 合集语法
+
+Swift 的合集类型写做 Set<Element>，Element 是合集要储存的类型。不同与数组，合集没有等价的简写。
+
+#### 使用数组字面量创建合集
+
+可以使用数组字面量来初始化一个合集，算是一种写一个或者多个合集值的快捷方式。
+
+```swift
+var favoriteGenres: Set<String> = ["Rock", "Classical", "Hip hop"]
+```
+
+合集类型不能从数组字面量推断出来，所以 Set 必须被显式地声明，而 String 可以被 Swift 类型推断出来，所以初始化可以更简短：
+
+```swift
+var favoriteGenres: Set = ["Rock", "Classical", "Hip hop"]
+```
+
+#### 访问和修改合集
+
+count、isEmpty、insert(:)、remove(:)、removeAll() 等方法就无需多提。
+
+因为合集是无序的，所以不能使用下标进行访问、修改、删除等。
+
+#### 合集遍历
+
+同数组一样，可以使用 for-in 循环里遍历合集的值。
+
+```swift
+for genre in favoriteGenres {
+    print("\(genre)")
+}
+```
+
+如果要以特定的顺序遍历合集的值，需要使用 sorted() 方法把合集元素作为使用 < 运算符排序好的数组返回，然后以数组方式进行遍历。
+
+```swift
+for genre in favoriteGenres.sorted() {
+    print("\(genre)")
+}
+```
+
+#### 合集操作
+
+使用 `intersection(_:)` 方法来创建一个只包含两个合集共有值的新合集。
+
+使用 `symmetricDifference(_:)` 方法来创建一个只包含两个合集各自有的非共有值的新合集。
+
+使用 `union(_:)` 方法来创建一个包含两个合集所有值的新合集。
+
+使用 `subtracting(_:)` 方法来创建一个两个合集当中不包含某个合集值的新合集。
+
+图片
+
+```swift
+let oddDigits: Set = [1, 3, 5, 7, 9]
+let evenDigits: Set = [0, 2, 4, 6, 8]
+let singleDigitPrimeNumbers: Set = [2, 3, 5, 7]
+ 
+oddDigits.union(evenDigits).sorted()
+// [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+oddDigits.intersection(evenDigits).sorted()
+// []
+oddDigits.subtracting(singleDigitPrimeNumbers).sorted()
+// [1, 9]
+oddDigits.symmetricDifference(singleDigitPrimeNumbers).sorted()
+// [1, 2, 9]
+```
+
+#### 合集成员关系和相等性
+
+合集 a 是合集 b 的**超集**，合集 b 是合集 a 的**子集**，因为合集 a 包含合集 b 的所有元素。
+
+合集 b 和合集 c 是不相交的，因为他们的元素没有相同的。
+
+图片
+
+使用“相等”运算符 ( == )来判断两个合集是否包含有相同的值。
+
+使用 isSubset(of:) 方法来确定一个合集的所有值是被某合集包含。
+
+使用 isSuperset(of:)方法来确定一个合集是否包含某个合集的所有值。
+
+使用 isStrictSubset(of:) 或者 isStrictSuperset(of:)方法来确定是个合集是否为某一个合集的子集或者超集，但并不相等。
+
+使用 isDisjoint(with:)方法来判断两个合集是否拥有完全不同的值。
+
+### 字典
+
+字典是无序的互相关联的同一类型的键和同一类型的值的集合。每一个值都与唯一的键相关联，键是值的身份标记。
+
+#### 字典语法
+
+Swift 的字典类型全写为 Dictionary<Key, Value>，简写为 [Key: Value]，其中的 Key 是用来作为字典键的值类型， Value 就是字典为这些键储存的值的类型，Key 必须遵循 Hashable协议。
+
+```swift
+var namesOfIntegers = [Int: String]()
+```
+
+#### 创建字典
+
+键值对由一个键和一个值组合而成，每个键值对里的键和值用冒号分隔。
+
+键值对写做一个列表，用逗号分隔，并且最终用方括号把它们括起：
+
+```swift
+var airports: [String: String] = ["YYZ": "Toronto Pearson", "DUB": "Dublin"]
+```
+
+#### 访问和修改字典
+
+可以通过键来访问、修改、删除字典中的值。
+
+#### 遍历字典
+
+使用 for-in 来遍历字典的键值对时，每一个元素返回为 (key, value) 的元组。
+
+```swift
+ for (airportCode, airportName) in airports {
+    print("\(airportCode): \(airportName)")
+}
+```
+
+字典是无序的，要以特定的顺序遍历字典的键或值，就使用键或值的 sorted()方法。
+
+
+
+
+
+
+
