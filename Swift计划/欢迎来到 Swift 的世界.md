@@ -1216,9 +1216,115 @@ var airports: [String: String] = ["YYZ": "Toronto Pearson", "DUB": "Dublin"]
 
 字典是无序的，要以特定的顺序遍历字典的键或值，就使用键或值的 sorted()方法。
 
+## 控制流
 
+Swift 提供所有多样化的控制流语句，包括 `while`、`for-in `来多次执行任务；`if-else`、`guard`、`switch-case`、`break` 和 `continue` 控制代码分支和切换。
 
+### For-in 循环
 
+使用 for-in 循环来遍历数组、字典、数字区间等。
 
+```
+let names = ["Anna", "Alex", "Brian", "Jack"]
+for name in names {
+    print("Hello, \(name)!")
+}
 
+let numberOfLegs = ["spider": 8, "ant": 6, "cat": 4]
+for (animalName, legCount) in numberOfLegs {
+    print("\(animalName)s have \(legCount) legs")
+}
+
+for index in 1...5 {
+    print("\(index) times 5 is \(index * 5)")
+}
+```
+
+可以使用 stride(from:to:by:) 方法来跳过不想要的区间。
+
+```swift
+let minuteInterval = 5
+for tickMark in stride(from: 0, to: minutes, by: minuteInterval) {
+    // render the tick mark every 5 minutes (0, 5, 10, 15 ... 45, 50, 55)
+}
+```
+
+### While 循环
+
+Swift 提供了两种 while 循环：
+
+- while 在每次循环开始的时候判断条件。
+- repeat-while 在每次循环结束的时候判断条件。
+
+#### While
+
+```swift
+while condition {
+    statements
+}
+```
+
+#### Repeat-While
+
+Swift 的 repeat-while 循环是与其他语言中的 do-while 循环类似的。
+
+```swift
+repeat {
+    statements
+} while condition
+```
+
+### if-else
+
+if-else 语句有着一个单一的 if 条件。在 true 时会执行 if 里的语句，false 时会执行 else 里的语句。
+
+```swift
+var temperatureInFahrenheit = 30
+if temperatureInFahrenheit <= 32 {
+    print("It's very cold. Consider wearing a scarf.")
+} else {
+    print("It's not that cold. Wear a t-shirt.")
+}
+```
+
+### Switch
+
+switch 语句会将一个值与多个可能的模式匹配。然后基于第一个成功匹配的模式来执行合适的代码块。switch 语句代替 if 语句提供了对多个潜在状态的响应。
+
+switch 语句把一个值与一个或多个相同类型的值比较，每一个 switch 语句都由多个可能的情况组成，每一个情况都以 case 关键字开始。
+
+```swift
+switch some value to consider {
+case value 1:
+    respond to value 1
+case value 2, value 3:
+    respond to value 2 or 3
+default:
+    otherwise, do something else
+}
+```
+
+对于对比额外特定的值来说，Swift 提供了多种方法给每个情况来区别更复杂的匹配模式。
+
+相比 C 和 Objective-C 里的 switch 语句来说，Swift 里的 switch 语句不会默认从每个情况的末尾贯穿到下一个情况里。
+
+相反，整个 switch 语句会在匹配到第一个 switch 情况执行完毕之后退出，不再需要显式的 break 语句。
+
+这使得 switch 语句比 C 的更安全和易用，并且避免了意外地执行多个 switch 情况。
+
+尽管 break 在 Swift 里不是必须的，你仍然可以使用 break 语句来匹配和忽略特定的情况，或者在某个情况执行完成之前就打断它。
+
+每一个情况的函数体必须包含至少一个可执行的语句，不然编译会报错。
+
+在一个 switch 情况中匹配多个值可以用逗号分隔，并且可以写成多行。
+
+```swift
+let anotherCharacter: Character = "a"
+switch anotherCharacter {
+case "a", "A":
+    print("The letter A")
+default:
+    print("Not the letter A")
+}
+```
 
