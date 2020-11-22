@@ -94,5 +94,7 @@ configure: error: C compiler cannot create executables
 See `config.log' for more details
 ```
 
-出现此问题是安装了多个 XCode，或者未指定 XCode导致的
+出现此问题是安装了多个 XCode，或者未指定 XCode导致的，按下图指定 XCode即可。
+
+![image-20201122175108203](https://cdn.jsdelivr.net/gh/SunSatan/PictureBed@master/uPic/image-20201122175108203.png)
 
